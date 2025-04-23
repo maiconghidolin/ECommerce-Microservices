@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+    order-service:
+        build:
+            context: ../OrderService
+            dockerfile: OrderService.Presentation/Dockerfile
+            args:
+                BUILD_CONFIGURATION: "Debug"
+        image: ecommerce/order-service:local-dev
+        networks:
+            - ecommerce-network
+        environment:
+            ASPNETCORE_ENVIRONMENT: Development
+        depends_on:
+            postgres:
+                condition: service_healthy
