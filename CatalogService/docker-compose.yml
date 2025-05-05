@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+    catalog-service:
+        build:
+            context: ../CatalogService
+            dockerfile: CatalogService.Presentation/Dockerfile
+            args:
+                BUILD_CONFIGURATION: "Debug"
+        image: ecommerce/catalog-service:local-dev
+        ports:
+            - 8081:8080
+        labels:
+            log_enabled: true
+            service_name: CatalogService
+        networks:
+            - ecommerce-network
+        environment:
+            ASPNETCORE_ENVIRONMENT: Development
+        depends_on:
+            postgres:
+                condition: service_healthy
