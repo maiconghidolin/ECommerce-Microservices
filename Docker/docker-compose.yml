@@ -1,0 +1,131 @@
+version: "3.8"
+
+volumes:
+    postgres-data:
+    rabbitmq-data:
+    rabbitmq-log:
+    grafana-data:
+    prometheus_data:
+
+networks:
+    ecommerce-network:
+        driver: bridge
+
+services:
+    
+    postgres:
+        image: postgres:15.3-alpine
+        restart: always
+        ports:
+            - 5432:5432
+        networks:
+            - ecommerce-network
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 3s
+            retries: 5
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        restart: always
+        hostname: qsearchmq
+        ports:
+            - 5672:5672
+            - 15672:15672
+        volumes:
+            - rabbitmq-data:/var/lib/rabbitmq
+            - rabbitmq-log:/var/log/rabbitmq
+        networks:
+            - ecommerce-network
+
+    prometheus:
+        image: prom/prometheus:latest
+        ports:
+            - 9090:9090
+        volumes:
+            - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+            - prometheus_data:/prometheus
+        command:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--web.console.libraries=/etc/prometheus/console_libraries'
+            - '--web.console.templates=/etc/prometheus/consoles'
+            - '--web.enable-lifecycle'
+        networks:
+            - ecommerce-network
+    
+    node-exporter:
+        image: prom/node-exporter:latest
+        ports:
+            - 9100:9100
+        volumes:
+            - /proc:/host/proc:ro
+            - /sys:/host/sys:ro
+            - /:/rootfs:ro
+        command:
+            - '--path.procfs=/host/proc'
+            - '--path.rootfs=/rootfs'
+            - '--path.sysfs=/host/sys'
+            - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+        networks:
+            - ecommerce-network
+
+    tempo:
+        image: grafana/tempo:latest
+        volumes:
+            - ./observability/tempo/tempo.yml:/etc/tempo/tempo.yml
+        ports:
+            - 3200:3200    # Tempo HTTP API
+            - 4317:4317    # OTLP gRPC receiver
+        command:
+            - -config.file=/etc/tempo/tempo.yml
+        networks:
+            - ecommerce-network
+
+    loki:
+        image: grafana/loki:latest
+        volumes:
+            - ./observability/loki/loki.yml:/etc/loki/loki.yml
+        ports:
+            - 3100:3100
+        command:
+            - -config.file=/etc/loki/loki.yml
+        networks:
+            - ecommerce-network
+
+    promtail:
+        image: grafana/promtail:latest
+        volumes:
+            - ./observability/promtail/promtail.yml:/etc/promtail/promtail.yml
+            - /var/log:/var/log
+            - /var/lib/docker/containers:/var/lib/docker/containers:ro
+            - /etc/machine-id:/etc/machine-id:ro
+            - /var/run/docker.sock:/var/run/docker.sock
+        command:
+            - -config.file=/etc/promtail/promtail.yml
+        networks:
+            - ecommerce-network
+        depends_on:
+            - loki
+
+    grafana:
+        image: grafana/grafana:latest
+        ports:
+            - 3000:3000
+        depends_on:
+            - prometheus
+            - tempo
+            - loki
+        environment:
+            - GF_SECURITY_ADMIN_USER=admin
+            - GF_SECURITY_ADMIN_PASSWORD=admin
+        volumes:
+            - grafana-data:/var/lib/grafana
+        networks:
+            - ecommerce-network
