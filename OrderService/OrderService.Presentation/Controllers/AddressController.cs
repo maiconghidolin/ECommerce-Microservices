@@ -6,10 +6,8 @@ namespace OrderService.Presentation.Controllers;
 
 [ApiController]
 [Route("addresses")]
-public class AddressController(ILogger<AddressController> logger, IAddressService addressService) : ControllerBase
+public class AddressController(ILogger<AddressController> _logger, IAddressService _addressService) : ControllerBase
 {
-    private readonly ILogger<AddressController> _logger = logger;
-    private readonly IAddressService _addressService = addressService;
 
     [HttpGet()]
     public async Task<List<Address>> Get()

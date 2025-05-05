@@ -5,10 +5,8 @@ using OrderService.Application.Models;
 namespace OrderService.Presentation.Controllers;
 
 [ApiController]
-public class OrderItemController(ILogger<OrderItemController> logger, IOrderItemService orderItemService) : ControllerBase
+public class OrderItemController(ILogger<OrderItemController> _logger, IOrderItemService _orderItemService) : ControllerBase
 {
-    private readonly ILogger<OrderItemController> _logger = logger;
-    private readonly IOrderItemService _orderItemService = orderItemService;
 
     [HttpGet("orders/{orderId}/itens")]
     public async Task<List<OrderItem>> Get(Guid orderId)

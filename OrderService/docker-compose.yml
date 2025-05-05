@@ -8,6 +8,11 @@ services:
             args:
                 BUILD_CONFIGURATION: "Debug"
         image: ecommerce/order-service:local-dev
+        ports:
+            - 8080:8080
+        labels:
+            log_enabled: true
+            service_name: OrderService
         networks:
             - ecommerce-network
         environment:

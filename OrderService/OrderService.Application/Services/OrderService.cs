@@ -1,12 +1,14 @@
-﻿using OrderService.Application.Interfaces;
+﻿using Microsoft.Extensions.Configuration;
+using OrderService.Application.Interfaces;
 using OrderService.Application.Mappers;
 using OrderService.Application.Models;
 using OrderService.Domain.Enums;
 using OrderService.Domain.Interfaces.Repositories;
+using System.Net.Http.Json;
 
 namespace OrderService.Application.Services;
 
-public class OrderService(IOrderRepository _orderRepository, IPaymentDataRepository _paymentDataRepository) : IOrderService
+public class OrderService(IOrderRepository _orderRepository, IPaymentDataRepository _paymentDataRepository, IHttpClientFactory _httpClientFactory, IConfiguration _configuration) : IOrderService
 {
 
     public async Task<List<Order>> GetAll()
@@ -115,6 +117,34 @@ public class OrderService(IOrderRepository _orderRepository, IPaymentDataReposit
     public async Task Delete(Guid id)
     {
         await _orderRepository.Delete(id);
+    }
+
+    public async Task TracingTest(bool raiseError)
+    {
+        var catalogClientName = _configuration["CatalogService:ClientName"];
+        var catalogClient = _httpClientFactory.CreateClient(catalogClientName);
+
+        var product = new Product()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Product",
+            Description = "Test Product",
+            UnitPrice = 10
+        };
+
+        var content = JsonContent.Create(product);
+
+        var httpResponse = await catalogClient.PostAsync("products", content);
+
+        httpResponse.EnsureSuccessStatusCode();
+
+        if (raiseError)
+            throw new Exception("Tracing test raised error");
+
+        httpResponse = await catalogClient.DeleteAsync($"products/{product.Id}");
+
+        httpResponse.EnsureSuccessStatusCode();
+
     }
 
 }

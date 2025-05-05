@@ -1,5 +1,7 @@
 ﻿using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using OrderService.Presentation.Middleware;
+using Serilog;
 
 namespace OrderService.Presentation.Extensions;
 
@@ -13,8 +15,12 @@ public static class WebApplicationExtension
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
 
+        app.UseExceptionMiddleware();
+
         app.UseSwagger();
         app.UseSwaggerUI();
+
+        app.UseSerilogRequestLogging();
 
         app.UseAuthentication();
         app.UseAuthorization();
@@ -26,5 +32,7 @@ public static class WebApplicationExtension
             context.Request.EnableBuffering();
             return next();
         });
+
+        app.MapPrometheusScrapingEndpoint();
     }
 }

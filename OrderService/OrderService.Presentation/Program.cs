@@ -1,6 +1,7 @@
 using OrderService.Application.Extensions;
 using OrderService.Infrastructure.Extensions;
 using OrderService.Presentation.Extensions;
+using Serilog;
 
 namespace OrderService.Presentation;
 
@@ -11,6 +12,12 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         IConfiguration configuration = builder.Configuration;
+
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
 
         builder.Services.Configure(configuration);
 

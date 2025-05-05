@@ -7,14 +7,25 @@ namespace OrderService.Presentation.Controllers;
 
 [ApiController]
 [Route("orders")]
-public class OrderController(ILogger<OrderController> logger, IOrderService orderService) : ControllerBase
+public class OrderController(ILogger<OrderController> _logger, IOrderService _orderService) : ControllerBase
 {
-    private readonly ILogger<OrderController> _logger = logger;
-    private readonly IOrderService _orderService = orderService;
+
+    [HttpPost("tracing-test")]
+    public async Task<ActionResult> TracingTest([FromBody] bool raiseError = false)
+    {
+        _logger.LogInformation("Tracing test started");
+
+        await _orderService.TracingTest(raiseError);
+
+        _logger.LogInformation("Tracing test finished");
+
+        return Ok();
+    }
 
     [HttpGet()]
     public async Task<List<Order>> Get()
     {
+        _logger.LogInformation("Getting all orders");
         return await _orderService.GetAll();
     }
 
