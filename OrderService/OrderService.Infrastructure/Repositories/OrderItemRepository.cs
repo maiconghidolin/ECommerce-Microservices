@@ -34,7 +34,7 @@ public class OrderItemRepository(EFContext _context) : IOrderItemRepository
                         .Where(x => x.Id == id)
                         .ExecuteUpdateAsync(s => s
                             .SetProperty(p => p.IsDeleted, v => true)
-                            .SetProperty(p => p.DeletedAt, v => DateTimeOffset.Now));
+                            .SetProperty(p => p.DeletedAt, v => DateTimeOffset.UtcNow));
     }
 
 }

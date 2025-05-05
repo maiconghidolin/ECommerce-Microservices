@@ -38,7 +38,7 @@ public class PaymentDataRepository(EFContext _context) : IPaymentDataRepository
                         .Where(x => x.Id == id)
                         .ExecuteUpdateAsync(s => s
                             .SetProperty(p => p.IsDeleted, v => true)
-                            .SetProperty(p => p.DeletedAt, v => DateTimeOffset.Now));
+                            .SetProperty(p => p.DeletedAt, v => DateTimeOffset.UtcNow));
     }
 
 }
