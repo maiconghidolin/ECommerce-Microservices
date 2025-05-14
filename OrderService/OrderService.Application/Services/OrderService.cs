@@ -34,70 +34,46 @@ public class OrderService(IOrderRepository _orderRepository, IPaymentDataReposit
 
     public async Task Create(Order order)
     {
-        try
-        {
-            var mappedOrder = order.MapToEntity();
-            mappedOrder.Id = Guid.NewGuid();
-            mappedOrder.Status = OrderStatus.Pending;
-            mappedOrder.CreatedAt = order.CreatedAt;
-            mappedOrder.UpdatedAt = DateTimeOffset.UtcNow;
+        var mappedOrder = order.MapToEntity();
+        mappedOrder.Id = Guid.NewGuid();
+        mappedOrder.Status = OrderStatus.Pending;
+        mappedOrder.CreatedAt = order.CreatedAt;
+        mappedOrder.UpdatedAt = DateTimeOffset.UtcNow;
 
-            await _orderRepository.Create(mappedOrder);
+        await _orderRepository.Create(mappedOrder);
 
-            // send rabbitmq message for order-created
-        }
-        catch (Exception ex)
-        {
-            // log
-            throw;
-        }
+        // send rabbitmq message for order-created
     }
 
     public async Task SetShippingAddress(Guid id, Guid addressId)
     {
-        try
-        {
-            var order = await _orderRepository.Get(id);
+        var order = await _orderRepository.Get(id);
 
-            if (order == null)
-                throw new Exception("Order not found");
+        if (order == null)
+            throw new Exception("Order not found");
 
-            order.ShippingAddressId = addressId;
-            await _orderRepository.Update(order);
+        order.ShippingAddressId = addressId;
+        await _orderRepository.Update(order);
 
-            // send rabbitmq message for order-updated
-        }
-        catch (Exception ex)
-        {
-            // log
-            throw;
-        }
+        // send rabbitmq message for order-updated
     }
 
     public async Task SetPaymentData(Guid id, PaymentData paymentData)
     {
-        try
-        {
-            var order = await _orderRepository.Get(id);
+        var order = await _orderRepository.Get(id);
 
-            if (order == null)
-                throw new Exception("Order not found");
+        if (order == null)
+            throw new Exception("Order not found");
 
-            var mappedPaymentData = paymentData.MapToEntity();
-            mappedPaymentData.Id = Guid.NewGuid();
+        var mappedPaymentData = paymentData.MapToEntity();
+        mappedPaymentData.Id = Guid.NewGuid();
 
-            await _paymentDataRepository.Create(mappedPaymentData);
+        await _paymentDataRepository.Create(mappedPaymentData);
 
-            order.PaymentDataId = mappedPaymentData.Id;
-            await _orderRepository.Update(order);
+        order.PaymentDataId = mappedPaymentData.Id;
+        await _orderRepository.Update(order);
 
-            // send rabbitmq message for order-updated
-        }
-        catch (Exception ex)
-        {
-            // log
-            throw;
-        }
+        // send rabbitmq message for order-updated
     }
 
     public async Task Update(Guid id, Order orderDTO)

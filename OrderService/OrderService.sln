@@ -3,13 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Presentation", "OrderService.Presentation\OrderService.Presentation.csproj", "{CA5B2E59-545C-4736-97EB-9AE7190967F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Presentation", "OrderService.Presentation\OrderService.Presentation.csproj", "{CA5B2E59-545C-4736-97EB-9AE7190967F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Domain", "OrderService.Domain\OrderService.Domain.csproj", "{008399B5-6246-46E9-A3CA-B8059D29BF8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Domain", "OrderService.Domain\OrderService.Domain.csproj", "{008399B5-6246-46E9-A3CA-B8059D29BF8C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Infrastructure", "OrderService.Infrastructure\OrderService.Infrastructure.csproj", "{D4DF2C01-EC74-466F-94DD-902CF76015D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Infrastructure", "OrderService.Infrastructure\OrderService.Infrastructure.csproj", "{D4DF2C01-EC74-466F-94DD-902CF76015D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Application", "OrderService.Application\OrderService.Application.csproj", "{685F4DB4-92A0-4D8A-ABC9-D1998CFDBB1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Application", "OrderService.Application\OrderService.Application.csproj", "{685F4DB4-92A0-4D8A-ABC9-D1998CFDBB1C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F653CB86-1808-482B-99CC-1315E9D6666E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Application.Unit.Tests", "OrderService.Application.Unit.Tests\OrderService.Application.Unit.Tests.csproj", "{A163669A-425A-4998-AFAF-EB4EDEF6D921}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.Presentation.Integration.Tests", "OrderService.Presentation.Integration.Tests\OrderService.Presentation.Integration.Tests.csproj", "{8359D4BE-D298-438B-B226-9C6C7EB2DB08}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +39,21 @@ Global
 		{685F4DB4-92A0-4D8A-ABC9-D1998CFDBB1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{685F4DB4-92A0-4D8A-ABC9-D1998CFDBB1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{685F4DB4-92A0-4D8A-ABC9-D1998CFDBB1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A163669A-425A-4998-AFAF-EB4EDEF6D921}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A163669A-425A-4998-AFAF-EB4EDEF6D921}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A163669A-425A-4998-AFAF-EB4EDEF6D921}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A163669A-425A-4998-AFAF-EB4EDEF6D921}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8359D4BE-D298-438B-B226-9C6C7EB2DB08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8359D4BE-D298-438B-B226-9C6C7EB2DB08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8359D4BE-D298-438B-B226-9C6C7EB2DB08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8359D4BE-D298-438B-B226-9C6C7EB2DB08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A163669A-425A-4998-AFAF-EB4EDEF6D921} = {F653CB86-1808-482B-99CC-1315E9D6666E}
+		{8359D4BE-D298-438B-B226-9C6C7EB2DB08} = {F653CB86-1808-482B-99CC-1315E9D6666E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F0C002B5-0D0E-4DF1-8460-781EAF7062C3}

@@ -21,6 +21,9 @@ public class AddressService(IAddressRepository _addressRepository) : IAddressSer
     {
         var address = await _addressRepository.Get(id);
 
+        if (address == null)
+            return null;
+
         var mappedAddress = address.MapToModel();
 
         return mappedAddress;
@@ -60,6 +63,7 @@ public class AddressService(IAddressRepository _addressRepository) : IAddressSer
 
         address.UpdatedAt = DateTimeOffset.UtcNow;
         address.Street = addressDTO.Street;
+        address.Number = addressDTO.Number;
         address.City = addressDTO.City;
         address.State = addressDTO.State;
         address.ZipCode = addressDTO.ZipCode;

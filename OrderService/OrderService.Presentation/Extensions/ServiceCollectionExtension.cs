@@ -70,7 +70,9 @@ public static class ServiceCollectionExtension
                     });
             });
 
-        services.AddControllers();
+        services
+            .AddControllers()
+            .AddNewtonsoftJson();
 
         services.AddEndpointsApiExplorer();
 

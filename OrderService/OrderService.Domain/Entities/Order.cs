@@ -18,11 +18,11 @@ public class Order : BaseEntity
 
     public virtual List<OrderItem> OrderItems { get; set; }
 
-    public Guid ShippingAddressId { get; set; }
+    public Guid? ShippingAddressId { get; set; }
 
     public virtual Address ShippingAddress { get; set; }
 
-    public Guid PaymentDataId { get; set; }
+    public Guid? PaymentDataId { get; set; }
 
     public virtual PaymentData PaymentData { get; set; }
 

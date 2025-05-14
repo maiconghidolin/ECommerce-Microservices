@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Application.Interfaces;
 using OrderService.Application.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace OrderService.Presentation.Controllers;
 
@@ -52,17 +51,31 @@ public class OrderController(ILogger<OrderController> _logger, IOrderService _or
     }
 
     [HttpPost("{id}/set-shipping-address")]
-    public async Task<ActionResult> Patch(Guid id, [FromBody, Required] Guid addressId)
+    public async Task<ActionResult> SetShippingAddress(Guid id, [FromBody] Guid addressId)
     {
-        await _orderService.SetShippingAddress(id, addressId);
-        return Ok();
+        try
+        {
+            await _orderService.SetShippingAddress(id, addressId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("{id}/set-payment-data")]
-    public async Task<ActionResult> Patch(Guid id, [FromBody] PaymentData paymentData)
+    public async Task<ActionResult> SetPaymentData(Guid id, [FromBody] PaymentData paymentData)
     {
-        await _orderService.SetPaymentData(id, paymentData);
-        return Ok();
+        try
+        {
+            await _orderService.SetPaymentData(id, paymentData);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpDelete("{id}")]

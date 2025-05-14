@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Application.Interfaces;
 using OrderService.Application.Models;
@@ -44,11 +45,17 @@ public class AddressController(ILogger<AddressController> _logger, IAddressServi
     }
 
     [HttpPatch("{id}")]
-    public async Task<ActionResult> Patch(Guid id, [FromBody] Address address)
+    public async Task<ActionResult> Patch(Guid id, [FromBody] JsonPatchDocument<Address> patchAddress)
     {
         try
         {
-            if (!ModelState.IsValid)
+            var address = await _addressService.Get(id);
+            if (address == null)
+                return NotFound();
+
+            patchAddress.ApplyTo(address, ModelState);
+
+            if (!TryValidateModel(address))
                 return BadRequest(ModelState);
 
             await _addressService.Update(id, address);
