@@ -1,36 +1,36 @@
+using NotificationService.Application.Extensions;
+using NotificationService.Infrastructure.Extensions;
+using NotificationService.Presentation.Extensions;
+using Serilog;
 
-namespace NotificationService.Presentation
+namespace NotificationService.Presentation;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+        IConfiguration configuration = builder.Configuration;
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
 
-            var app = builder.Build();
+        builder.Host.UseSerilog();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+        builder.Services.Configure(configuration);
 
-            app.UseHttpsRedirection();
+        builder.Services.ConfigureDatabase(configuration);
 
-            app.UseAuthorization();
+        builder.Services.AddServiceInjection();
 
+        builder.Services.AddRepositoryInjection();
 
-            app.MapControllers();
+        var app = builder.Build();
 
-            app.Run();
-        }
+        app.Configure();
+
+        app.Run();
     }
 }
