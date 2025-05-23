@@ -7,6 +7,6 @@ public static class ServiceInjection
 {
     public static void AddServiceInjection(this IServiceCollection services)
     {
-        services.AddTransient<IProductService, Services.ProductService>();
+        services.AddScoped<IProductService, Services.ProductService>();
     }
 }

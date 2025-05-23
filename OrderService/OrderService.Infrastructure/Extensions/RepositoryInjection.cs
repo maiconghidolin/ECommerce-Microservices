@@ -8,9 +8,9 @@ public static class RepositoryInjection
 {
     public static void AddRepositoryInjection(this IServiceCollection services)
     {
-        services.AddTransient<IOrderRepository, OrderRepository>();
-        services.AddTransient<IOrderItemRepository, OrderItemRepository>();
-        services.AddTransient<IAddressRepository, AddressRepository>();
-        services.AddTransient<IPaymentDataRepository, PaymentDataRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+        services.AddScoped<IAddressRepository, AddressRepository>();
+        services.AddScoped<IPaymentDataRepository, PaymentDataRepository>();
     }
 }

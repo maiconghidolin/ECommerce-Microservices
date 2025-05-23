@@ -7,8 +7,8 @@ public static class ServiceInjection
 {
     public static void AddServiceInjection(this IServiceCollection services)
     {
-        services.AddTransient<IOrderService, Services.OrderService>();
-        services.AddTransient<IOrderItemService, Services.OrderItemService>();
-        services.AddTransient<IAddressService, Services.AddressService>();
+        services.AddScoped<IOrderService, Services.OrderService>();
+        services.AddScoped<IOrderItemService, Services.OrderItemService>();
+        services.AddScoped<IAddressService, Services.AddressService>();
     }
 }

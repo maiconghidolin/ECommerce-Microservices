@@ -8,6 +8,6 @@ public static class RepositoryInjection
 {
     public static void AddRepositoryInjection(this IServiceCollection services)
     {
-        services.AddTransient<IProductRepository, ProductRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
     }
 }
