@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+    notification-service:
+        build:
+            context: ../NotificationService
+            dockerfile: NotificationService.Presentation/Dockerfile
+            args:
+                BUILD_CONFIGURATION: "Debug"
+        image: ecommerce/notification-service:local-dev
+        ports:
+            - 8082:8080
+        labels:
+            log_enabled: true
+            service_name: NotificationService
+        networks:
+            - ecommerce-network
+        environment:
+            ASPNETCORE_ENVIRONMENT: Development
+        depends_on:
+            postgres:
+                condition: service_healthy

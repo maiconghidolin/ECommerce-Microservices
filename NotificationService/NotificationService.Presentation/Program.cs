@@ -25,7 +25,11 @@ public class Program
 
         builder.Services.AddServiceInjection();
 
+        builder.Services.AddMessageHandlerInjection();
+
         builder.Services.AddRepositoryInjection();
+
+        builder.Services.AddMqConsumerInjection();
 
         var app = builder.Build();
 

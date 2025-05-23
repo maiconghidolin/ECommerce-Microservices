@@ -13,8 +13,6 @@ public class Notification
 
     public string EmailAdress { get; set; }
 
-    public Guid DeviceId { get; set; }
-
     public string Number { get; set; }
 
     public string Subject { get; set; }

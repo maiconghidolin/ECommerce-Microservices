@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters;
+﻿using EasyNetQ;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using RabbitMQ.Client;
 
 namespace NotificationService.Presentation.Extensions;
 
@@ -63,19 +63,11 @@ public static class ServiceCollectionExtension
 
         services.AddSwaggerGen();
 
-        services.AddSingleton<IConnection>(sp =>
-        {
-            var factory = new ConnectionFactory()
-            {
-                Uri = new Uri(configuration["MessagingSettings:URI"]),
-                AutomaticRecoveryEnabled = true
-            };
-
-            return factory.CreateConnectionAsync().GetAwaiter().GetResult();
-        });
+        services.AddSingleton<IBus>(RabbitHutch.CreateBus(configuration["MessagingSettings:EasyNetQConnectionString"]));
 
         services.AddHealthChecks()
             .AddRabbitMQ(
+                configuration["MessagingSettings:URI"],
                 name: "RabbitMQ",
                 failureStatus: HealthStatus.Unhealthy)
             .AddMongoDb();
