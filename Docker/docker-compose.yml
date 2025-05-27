@@ -2,6 +2,7 @@ version: "3.8"
 
 volumes:
     postgres-data:
+    mongodb-data:
     rabbitmq-data:
     rabbitmq-log:
     grafana-data:
@@ -30,6 +31,33 @@ services:
             interval: 5s
             timeout: 3s
             retries: 5
+
+    mongodb:
+        image: mongo:6.0
+        restart: always
+        ports:
+            - 27017:27017
+        networks:
+            - ecommerce-network
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: password
+        volumes:
+            - mongodb-data:/data/db
+        healthcheck:
+            test: 
+                [
+                    "CMD",
+                    "mongosh",
+                    "mongodb://root:password@localhost:27017/admin",
+                    "--quiet",
+                    "--eval",
+                    "db.adminCommand('ping')"
+                ]
+            interval: 10s
+            timeout: 10s
+            retries: 5
+            start_period: 10s
 
     rabbitmq:
         image: rabbitmq:3-management-alpine
