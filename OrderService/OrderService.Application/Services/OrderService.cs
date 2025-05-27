@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OrderService.Application.Interfaces;
+using OrderService.Application.Interfaces.EventPublishers;
 using OrderService.Application.Mappers;
 using OrderService.Application.Models;
 using OrderService.Domain.Enums;
@@ -8,7 +9,7 @@ using System.Net.Http.Json;
 
 namespace OrderService.Application.Services;
 
-public class OrderService(IOrderRepository _orderRepository, IPaymentDataRepository _paymentDataRepository, IHttpClientFactory _httpClientFactory, IConfiguration _configuration) : IOrderService
+public class OrderService(IOrderRepository _orderRepository, IPaymentDataRepository _paymentDataRepository, IOrderEventPublisher _orderEventPublisher, IHttpClientFactory _httpClientFactory, IConfiguration _configuration) : IOrderService
 {
 
     public async Task<List<Order>> GetAll()
@@ -42,7 +43,7 @@ public class OrderService(IOrderRepository _orderRepository, IPaymentDataReposit
 
         await _orderRepository.Create(mappedOrder);
 
-        // send rabbitmq message for order-created
+        await _orderEventPublisher.PublishOrderCreatedEvent(mappedOrder);
     }
 
     public async Task SetShippingAddress(Guid id, Guid addressId)

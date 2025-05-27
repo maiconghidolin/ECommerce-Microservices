@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Moq;
+using OrderService.Application.Interfaces.EventPublishers;
 using OrderService.Application.Models;
 using OrderService.Application.Unit.Tests.Fixtures;
 using OrderService.Domain.Interfaces.Repositories;
@@ -14,6 +15,7 @@ public class OrderServiceTests : IClassFixture<WireMockFixture>
 {
     private readonly Mock<IOrderRepository> _orderRepository;
     private readonly Mock<IPaymentDataRepository> _paymentDataRepository;
+    private readonly Mock<IOrderEventPublisher> _orderEventPublisher;
     private readonly Services.OrderService _orderService;
     private readonly Mock<IHttpClientFactory> _httpClientFactory;
     private readonly WireMockServer _server;
@@ -31,7 +33,8 @@ public class OrderServiceTests : IClassFixture<WireMockFixture>
 
         _orderRepository = new Mock<IOrderRepository>();
         _paymentDataRepository = new Mock<IPaymentDataRepository>();
-        _orderService = new Services.OrderService(_orderRepository.Object, _paymentDataRepository.Object, _httpClientFactory.Object, config);
+        _orderEventPublisher = new Mock<IOrderEventPublisher>();
+        _orderService = new Services.OrderService(_orderRepository.Object, _paymentDataRepository.Object, _orderEventPublisher.Object, _httpClientFactory.Object, config);
 
         _server = fixture.Server;
     }
@@ -108,6 +111,7 @@ public class OrderServiceTests : IClassFixture<WireMockFixture>
 
         // Assert
         _orderRepository.Verify(repo => repo.Create(It.IsAny<Domain.Entities.Order>()), Times.Once);
+        _orderEventPublisher.Verify(publisher => publisher.PublishOrderCreatedEvent(It.IsAny<Domain.Entities.Order>()), Times.Once);
     }
 
     [Fact]

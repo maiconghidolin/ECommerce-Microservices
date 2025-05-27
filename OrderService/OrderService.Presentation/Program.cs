@@ -25,7 +25,11 @@ public class Program
 
         builder.Services.AddServiceInjection();
 
+        builder.Services.AddEventPublishersInjection();
+
         builder.Services.AddRepositoryInjection();
+
+        builder.Services.AddMqPublisherInjection();
 
         var app = builder.Build();
 
