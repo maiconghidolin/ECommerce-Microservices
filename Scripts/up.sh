@@ -4,5 +4,6 @@ docker-compose \
     -p ecommerce \
     -f ../Docker/docker-compose.yml \
     -f ../CatalogService/docker-compose.yml \
+    -f ../NotificationService/docker-compose.yml \
     -f ../OrderService/docker-compose.yml \
     up -d $@
