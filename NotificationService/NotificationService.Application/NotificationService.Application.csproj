@@ -15,8 +15,4 @@
 		<ProjectReference Include="..\NotificationService.Domain\NotificationService.Domain.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Interfaces\" />
-	</ItemGroup>
-
 </Project>

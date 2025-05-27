@@ -3,7 +3,7 @@ using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Application.Services;
 
-public class EmailNotification : Notification<Models.Email>
+public class EmailNotification : AbstractNotification<Models.Email>
 {
     private readonly ILogger<EmailNotification> _logger;
 

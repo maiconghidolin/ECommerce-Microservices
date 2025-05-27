@@ -9,10 +9,10 @@ namespace NotificationService.Application.MqConsumer;
 public class MessageHandler : IMessageHandler
 {
     private readonly ILogger<MessageHandler> _logger;
-    private readonly Notification<Models.Email> _emailNotification;
-    private readonly Notification<Models.SMS> _smsNotification;
+    private readonly AbstractNotification<Models.Email> _emailNotification;
+    private readonly AbstractNotification<Models.SMS> _smsNotification;
 
-    public MessageHandler(Notification<Models.Email> emailNotification, Notification<Models.SMS> smsNotification, ILogger<MessageHandler> logger)
+    public MessageHandler(AbstractNotification<Models.Email> emailNotification, AbstractNotification<Models.SMS> smsNotification, ILogger<MessageHandler> logger)
     {
         _emailNotification = emailNotification;
         _smsNotification = smsNotification;

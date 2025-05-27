@@ -3,7 +3,7 @@ using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Application.Services;
 
-public class SmsNotification : Notification<Models.SMS>
+public class SmsNotification : AbstractNotification<Models.SMS>
 {
     private readonly ILogger<SmsNotification> _logger;
 

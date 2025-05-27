@@ -3,11 +3,11 @@ using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Application.Services;
 
-public abstract class Notification<T>
+public abstract class AbstractNotification<T>
 {
     private readonly INotificationRepository _notificationRepository;
 
-    public Notification(INotificationRepository notificationRepository)
+    public AbstractNotification(INotificationRepository notificationRepository)
     {
         _notificationRepository = notificationRepository;
     }
