@@ -42,12 +42,19 @@ public class OrderController(ILogger<OrderController> _logger, IOrderService _or
     [HttpPost()]
     public async Task<ActionResult> Post(Order order)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        try
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        await _orderService.Create(order);
+            await _orderService.Create(order);
 
-        return Created("", order);
+            return Created("", order);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpPost("{id}/set-shipping-address")]

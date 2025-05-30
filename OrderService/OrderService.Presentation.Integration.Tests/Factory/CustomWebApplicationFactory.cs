@@ -1,6 +1,7 @@
 ﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
+using EasyNetQ;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrderService.Infrastructure;
 using Testcontainers.PostgreSql;
+using Testcontainers.RabbitMq;
 
 namespace OrderService.Presentation.Integration.Tests.Factory;
 
@@ -16,9 +18,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
 {
     private INetwork _network;
     private PostgreSqlContainer _postgresContainer;
+    private RabbitMqContainer _rabbitContainer;
     private IContainer _catalogServiceContainer;
     private string _orderServiceConnectionString = string.Empty;
     private string _catalogServiceUrl;
+    private string _rabbitEasyNetQConnectionString = string.Empty;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -26,7 +30,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         {
             var configOverrides = new Dictionary<string, string>
             {
-                ["CatalogService:URI"] = _catalogServiceUrl
+                ["CatalogService:URI"] = _catalogServiceUrl,
             };
 
             configBuilder.AddInMemoryCollection(configOverrides);
@@ -39,6 +43,13 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
 
             if (descriptor != null)
                 services.Remove(descriptor);
+
+            descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IBus));
+
+            if (descriptor != null)
+                services.Remove(descriptor);
+
+            services.AddSingleton<IBus>(RabbitHutch.CreateBus(_rabbitEasyNetQConnectionString));
 
             // Replace with Testcontainers PostgreSQL
             services.AddDbContext<EFContext>(options =>
@@ -57,6 +68,23 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         _network = new NetworkBuilder()
             .WithName($"ecommerce-network-{guid}")
             .Build();
+
+        _rabbitContainer = new RabbitMqBuilder()
+            .WithImage("rabbitmq:3-management-alpine")
+            .WithUsername("guest")
+            .WithPassword("guest")
+            .WithNetwork(_network)
+            .WithName($"rabbitmq-{guid}")
+            .WithNetworkAliases($"rabbitmq-{guid}")
+            .WithCleanUp(true)
+            .WithPortBinding(5672, true)
+            .WithPortBinding(15672, true)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5672))
+            .Build();
+
+        await _rabbitContainer.StartAsync();
+
+        _rabbitEasyNetQConnectionString = $"host={_rabbitContainer.Hostname}:{_rabbitContainer.GetMappedPublicPort(5672)};username=guest;password=guest";
 
         _postgresContainer = new PostgreSqlBuilder()
             .WithImage("postgres:latest")
@@ -96,6 +124,12 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         {
             await _postgresContainer.StopAsync();
             await _postgresContainer.DisposeAsync();
+        }
+
+        if (_rabbitContainer != null)
+        {
+            await _rabbitContainer.StopAsync();
+            await _rabbitContainer.DisposeAsync();
         }
 
         if (_catalogServiceContainer != null)
