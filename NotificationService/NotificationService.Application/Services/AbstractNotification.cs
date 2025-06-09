@@ -16,7 +16,7 @@ public abstract class AbstractNotification<T>
 
     protected abstract Task Send(T data);
 
-    public async Task Create(T data)
+    public virtual async Task Create(T data)
     {
         await Send(data);
 

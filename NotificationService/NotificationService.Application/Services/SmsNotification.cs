@@ -17,6 +17,7 @@ public class SmsNotification : AbstractNotification<Models.SMS>
         return new Domain.Entities.Notification()
         {
             Type = "SMS",
+            UserId = Guid.Parse(data.UserId),
             Number = data.Number,
             Subject = data.Subject,
             Body = data.Body

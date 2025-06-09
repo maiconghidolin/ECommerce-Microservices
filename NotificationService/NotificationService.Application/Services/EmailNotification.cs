@@ -17,6 +17,7 @@ public class EmailNotification : AbstractNotification<Models.Email>
         return new Domain.Entities.Notification()
         {
             Type = "Email",
+            UserId = Guid.Parse(data.UserId),
             EmailAdress = data.EmailAdress,
             Subject = data.Subject,
             Body = data.Body
