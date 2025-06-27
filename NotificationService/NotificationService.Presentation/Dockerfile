@@ -3,6 +3,8 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 COPY *.sln .
+COPY ["NotificationService.Application.Unit.Tests/NotificationService.Application.Unit.Tests.csproj", "NotificationService.Application.Unit.Tests/"]
+COPY ["NotificationService.Presentation.Integration.Tests/NotificationService.Presentation.Integration.Tests.csproj", "NotificationService.Presentation.Integration.Tests/"]
 COPY ["NotificationService.Application/NotificationService.Application.csproj", "NotificationService.Application/"]
 COPY ["NotificationService.Domain/NotificationService.Domain.csproj", "NotificationService.Domain/"]
 COPY ["NotificationService.Infrastructure/NotificationService.Infrastructure.csproj", "NotificationService.Infrastructure/"]
