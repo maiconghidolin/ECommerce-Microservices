@@ -1,0 +1,31 @@
+config:
+  clients:
+    - url: http://loki:3100/loki/api/v1/push
+      # If you are using a Loki Gateway, use the following URL instead:
+      # url: http://loki-gateway:3100/loki/api/v1/push
+
+  positions:
+    filename: /run/promtail/positions.yaml
+
+  snippets:
+    pipelineStages:
+    - match:
+        pipeline_name: "drop-all"
+        selector: '{namespace!="ecommerce"}'
+        action: drop
+
+extraVolumes:
+  - name: varlog
+    hostPath:
+      path: /var/log
+  - name: varlibpods
+    hostPath:
+      path: /var/lib/pods
+
+extraVolumeMounts:
+  - name: varlog
+    mountPath: /var/log
+    readOnly: true
+  - name: varlibpods
+    mountPath: /var/lib/pods
+    readOnly: true
