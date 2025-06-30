@@ -23,7 +23,7 @@ public static class ServiceCollectionExtension
             .WithTracing(tracing =>
             {
                 tracing
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("OrderService"))
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("NotificationService"))
                     .AddAspNetCoreInstrumentation(options =>
                     {
                         options.EnrichWithHttpRequest = (activity, httpRequest) =>
