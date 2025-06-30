@@ -31,7 +31,7 @@ public static class ServiceCollectionExtension
                     .AddNpgsql()
                     .AddOtlpExporter(opt =>
                     {
-                        opt.Endpoint = new Uri("http://tempo:4317"); // Tempo OTLP gRPC
+                        opt.Endpoint = new Uri(configuration["Tempo:URI"]);
                     });
             });
 
