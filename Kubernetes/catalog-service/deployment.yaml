@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-service
+  namespace: ecommerce
+  labels:
+    app: catalog-service
+    app.kubernetes.io/name: catalog-service
+spec:
+  selector:
+    matchLabels:
+      app: catalog-service
+      app.kubernetes.io/name: catalog-service
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: catalog-service
+        app.kubernetes.io/name: catalog-service
+    spec:
+      containers:
+      - name: catalog-service
+        image: ecommerce/catalog-service:local-dev
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8080
+        env:
+          - name: ASPNETCORE_ENVIRONMENT
+            valueFrom:
+              configMapKeyRef:
+                name: catalog-service-config
+                key: ASPNETCORE_ENVIRONMENT
+          - name: ServiceName
+            valueFrom:
+              configMapKeyRef:
+                name: catalog-service-config
+                key: ServiceName
+          - name: PodName
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: PodIP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secrets
+                key: POSTGRES_USER
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secrets
+                key: POSTGRES_PASSWORD
+          - name: Database__ConnectionString
+            value: "Host=postgres;Port=5432;Database=CatalogService;Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+          - name: Tempo__URI
+            value: "http://tempo.observability:4317"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
