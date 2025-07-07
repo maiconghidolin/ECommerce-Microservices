@@ -40,6 +40,11 @@ spec:
               configMapKeyRef:
                 name: notification-service-config
                 key: ServiceName
+          - name: ApiPathBase
+            valueFrom:
+              configMapKeyRef:
+                name: notification-service-config
+                key: ApiPathBase
           - name: PodName
             valueFrom:
               fieldRef:

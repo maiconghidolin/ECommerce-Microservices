@@ -40,6 +40,11 @@ spec:
               configMapKeyRef:
                 name: catalog-service-config
                 key: ServiceName
+          - name: ApiPathBase
+            valueFrom:
+              configMapKeyRef:
+                name: catalog-service-config
+                key: ApiPathBase
           - name: PodName
             valueFrom:
               fieldRef:
