@@ -7,8 +7,13 @@ namespace CatalogService.Presentation.Extensions;
 
 public static class WebApplicationExtension
 {
-    public static void Configure(this WebApplication app)
+    public static void Configure(this WebApplication app, IConfiguration configuration)
     {
+        var basePath = configuration["ApiPathBase"]?.Trim().TrimStart('/');
+
+        if (!string.IsNullOrWhiteSpace(basePath))
+            app.UsePathBase('/' + basePath);
+
         app.UseHealthChecks("/health", new HealthCheckOptions()
         {
             Predicate = _ => true,

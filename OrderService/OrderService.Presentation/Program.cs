@@ -38,7 +38,7 @@ public class Program
             DatabaseExtension.RunMigrations(scope.ServiceProvider);
         }
 
-        app.Configure();
+        app.Configure(configuration);
 
         app.Run();
     }

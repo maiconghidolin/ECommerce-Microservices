@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.OpenApi.Models;
 using Npgsql;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -39,7 +40,15 @@ public static class ServiceCollectionExtension
 
         services.AddEndpointsApiExplorer();
 
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog API", Version = "v1" });
+
+            var basePath = configuration["ApiPathBase"]?.Trim().TrimStart('/');
+
+            if (!string.IsNullOrWhiteSpace(basePath))
+                c.AddServer(new OpenApiServer { Url = '/' + basePath });
+        });
 
         services.AddSingleton<IConnection>(sp =>
         {

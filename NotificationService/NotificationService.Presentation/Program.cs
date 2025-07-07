@@ -33,7 +33,7 @@ public class Program
 
         var app = builder.Build();
 
-        app.Configure();
+        app.Configure(configuration);
 
         app.Run();
     }
