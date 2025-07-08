@@ -6,6 +6,10 @@ prometheus:
     enableAdminAPI: true
 
 prometheus-node-exporter:
+  hostPort: 9200
+  containerPort: 9200
+  service:
+    port: 9200
   hostRootFsMount:
     enabled: false
     mountPropagation: HostToContainer

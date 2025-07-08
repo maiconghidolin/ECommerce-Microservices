@@ -6,6 +6,9 @@ set -o pipefail  # Catch errors in piped commands
 echo "Creating namespaces..."
 kubectl apply -f namespace.yaml
 
+echo "🔧 Applying Helmfile CRDs..."
+helmfile apply -f helmfile-crds.yaml
+
 echo "🔧 Applying Helmfile..."
 helmfile apply
 
@@ -35,5 +38,8 @@ kubectl rollout status deployment ingress-nginx-controller -n ingress-nginx
 
 echo "✅ Controller ready. Applying ecommerce ingress..."
 kubectl apply -f ingress-nginx/ecommerce-ingress.yaml
+
+echo "✅ Controller ready. Applying observability ingress..."
+kubectl apply -f ingress-nginx/observability-ingress.yaml
 
 echo "✅ All resources applied successfully!"

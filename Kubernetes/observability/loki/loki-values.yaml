@@ -56,7 +56,7 @@ singleBinary:
   replicas: 1
   
   persistence:
-    storageClass: hostpath
+    storageClass: standard
     accessModes:
       - ReadWriteOnce
     size: 20Gi
