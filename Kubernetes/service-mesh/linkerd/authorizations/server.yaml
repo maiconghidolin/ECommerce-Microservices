@@ -1,0 +1,11 @@
+apiVersion: policy.linkerd.io/v1beta3
+kind: Server
+metadata:
+  name: catalog-server
+  namespace: ecommerce
+spec:
+  podSelector:
+    matchLabels:
+      app: catalog-service
+  port: 8080
+  proxyProtocol: HTTP/1

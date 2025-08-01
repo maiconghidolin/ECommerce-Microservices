@@ -22,7 +22,10 @@ spec:
       labels:
         app: catalog-service
         app.kubernetes.io/name: catalog-service
+      annotations:
+        linkerd.io/inject: enabled
     spec:
+      serviceAccountName: catalog-service-account
       containers:
       - name: catalog-service
         image: ecommerce/catalog-service:local-dev

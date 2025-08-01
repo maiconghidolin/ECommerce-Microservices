@@ -22,7 +22,10 @@ spec:
       labels:
         app: notification-service
         app.kubernetes.io/name: notification-service
+      annotations:
+        linkerd.io/inject: enabled
     spec:
+      serviceAccountName: notification-service-account
       containers:
       - name: notification-service
         image: ecommerce/notification-service:local-dev

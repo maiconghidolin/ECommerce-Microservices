@@ -22,7 +22,10 @@ spec:
       labels:
         app: order-service
         app.kubernetes.io/name: order-service
+      annotations:
+        linkerd.io/inject: enabled
     spec:
+      serviceAccountName: order-service-account
       containers:
       - name: order-service
         image: ecommerce/order-service:local-dev

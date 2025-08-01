@@ -1,0 +1,14 @@
+apiVersion: policy.linkerd.io/v1alpha1
+kind: MeshTLSAuthentication
+metadata:
+  name: access-to-catalog-auth
+  namespace: ecommerce
+spec:
+  identityRefs:
+    - kind: ServiceAccount
+      name: order-service-account
+      namespace: ecommerce
+      
+    - kind: ServiceAccount
+      name: ingress-nginx
+      namespace: ingress-nginx

@@ -14,6 +14,12 @@ kubectl delete namespace ecommerce || true &
 echo "🗑️ Deleting ingress-nginx namespace"
 kubectl delete namespace ingress-nginx || true &
 
+echo "🗑️ Deleting linkerd namespace"
+kubectl delete namespace linkerd || true &
+
+echo "🗑️ Deleting linkerd-viz namespace"
+kubectl delete namespace linkerd-viz || true &
+
 wait
 
 echo "Destroy completed successfully!"

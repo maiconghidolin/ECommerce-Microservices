@@ -2,7 +2,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: ecommerce
-
+  # annotations:
+  #   config.linkerd.io/default-inbound-policy: deny
+    
 ---
 
 apiVersion: v1

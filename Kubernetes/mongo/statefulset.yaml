@@ -13,6 +13,8 @@ spec:
     metadata:
       labels:
         app: mongodb
+      annotations:
+        linkerd.io/inject: enabled
     spec:
       containers:
         - name: mongodb

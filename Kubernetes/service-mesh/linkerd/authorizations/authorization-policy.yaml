@@ -1,0 +1,14 @@
+apiVersion: policy.linkerd.io/v1alpha1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-access-to-catalog
+  namespace: ecommerce
+spec:
+  requiredAuthenticationRefs:
+    - group: policy.linkerd.io
+      kind: MeshTLSAuthentication
+      name: access-to-catalog-auth
+  targetRef:
+    group: policy.linkerd.io
+    kind: Server
+    name: catalog-server

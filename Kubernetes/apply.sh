@@ -21,6 +21,11 @@ kubectl apply -f postgres/
 echo "🍃 Applying MongoDB manifests..."
 kubectl apply -f mongo/
 
+echo "Applying linkerd authorization policies..."
+kubectl apply -f service-mesh/linkerd/authorizations/server.yaml
+kubectl apply -f service-mesh/linkerd/authorizations/mesh-TLS-authentication.yaml
+kubectl apply -f service-mesh/linkerd/authorizations/authorization-policy.yaml
+
 echo "📦 Deploying order-service..."
 kubectl apply -f order-service/
 
