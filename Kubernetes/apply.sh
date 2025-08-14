@@ -21,19 +21,14 @@ kubectl apply -f postgres/
 echo "🍃 Applying MongoDB manifests..."
 kubectl apply -f mongo/
 
-echo "Applying linkerd authorization policies..."
-kubectl apply -f service-mesh/linkerd/authorizations/server.yaml
-kubectl apply -f service-mesh/linkerd/authorizations/mesh-TLS-authentication.yaml
-kubectl apply -f service-mesh/linkerd/authorizations/authorization-policy.yaml
-
 echo "📦 Deploying order-service..."
-kubectl apply -f order-service/
+helm upgrade --install order-service ./helm/order-service -n ecommerce -f ./helm/order-service/dev.values.yaml
 
 echo "🛒 Deploying catalog-service..."
-kubectl apply -f catalog-service/
+helm upgrade --install catalog-service ./helm/catalog-service -n ecommerce -f ./helm/catalog-service/dev.values.yaml
 
 echo "🔔 Deploying notification-service..."
-kubectl apply -f notification-service/
+helm upgrade --install notification-service ./helm/notification-service -n ecommerce -f ./helm/notification-service/dev.values.yaml
 
 echo "🌐 Applying Ingress resources..."
 kubectl apply -f ingress-nginx/nginx-ingress.1.11.3.yaml

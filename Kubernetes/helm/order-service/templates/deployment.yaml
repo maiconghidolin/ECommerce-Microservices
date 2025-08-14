@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: catalog-service
-  namespace: ecommerce
+  name: {{ .Values.deployment.name }}
+  namespace: {{ .Values.namespace.name }}
   labels:
-    app: catalog-service
-    app.kubernetes.io/name: catalog-service
+    app: {{ .Values.deployment.name }}
+    app.kubernetes.io/name: {{ .Values.deployment.name }}
 spec:
   selector:
     matchLabels:
-      app: catalog-service
-      app.kubernetes.io/name: catalog-service
-  replicas: 1
+      app: {{ .Values.deployment.name }}
+      app.kubernetes.io/name: {{ .Values.deployment.name }}
+  replicas: {{ .Values.deployment.replicas }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,33 +20,33 @@ spec:
   template:
     metadata:
       labels:
-        app: catalog-service
-        app.kubernetes.io/name: catalog-service
+        app: {{ .Values.deployment.name }}
+        app.kubernetes.io/name: {{ .Values.deployment.name }}
       annotations:
         linkerd.io/inject: enabled
     spec:
-      serviceAccountName: catalog-service-account
+      serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
-      - name: catalog-service
-        image: ecommerce/catalog-service:local-dev
-        imagePullPolicy: IfNotPresent
+      - name: {{ .Values.deployment.name }}
+        image: {{ .Values.deployment.image }}:{{ .Values.deployment.tag }}
+        imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}
         ports:
           - containerPort: 8080
         env:
           - name: ASPNETCORE_ENVIRONMENT
             valueFrom:
               configMapKeyRef:
-                name: catalog-service-config
+                name: {{ .Values.configMap.name }}
                 key: ASPNETCORE_ENVIRONMENT
           - name: ServiceName
             valueFrom:
               configMapKeyRef:
-                name: catalog-service-config
+                name: {{ .Values.configMap.name }}
                 key: ServiceName
           - name: ApiPathBase
             valueFrom:
               configMapKeyRef:
-                name: catalog-service-config
+                name: {{ .Values.configMap.name }}
                 key: ApiPathBase
           - name: PodName
             valueFrom:
@@ -67,7 +67,7 @@ spec:
                 name: postgres-secrets
                 key: POSTGRES_PASSWORD
           - name: Database__ConnectionString
-            value: "Host=postgres;Port=5432;Database=CatalogService;Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+            value: "Host=postgres;Port=5432;Database=OrderService;Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
           - name: Tempo__URI
             value: "http://tempo.observability:4317"
         resources:

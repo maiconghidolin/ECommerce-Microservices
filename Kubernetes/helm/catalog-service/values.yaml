@@ -1,0 +1,18 @@
+namespace:
+  name: "ecommerce"
+
+deployment:
+  name: "catalog-service"
+  replicas: 1
+  image: "maiconghidolin/catalog-service"
+  tag: "latest"
+  imagePullPolicy: IfNotPresent
+
+serviceAccount:
+  name: "catalog-service-account"
+
+configMap:
+  name: "catalog-service-config"
+
+service:
+  name: "catalog-service"

@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: notification-service
-  namespace: ecommerce
+  name: {{ .Values.deployment.name }}
+  namespace: {{ .Values.namespace.name }}
   labels:
-    app: notification-service
-    app.kubernetes.io/name: notification-service
+    app: {{ .Values.deployment.name }}
+    app.kubernetes.io/name: {{ .Values.deployment.name }}
 spec:
   selector:
     matchLabels:
-      app: notification-service
-      app.kubernetes.io/name: notification-service
-  replicas: 1
+      app: {{ .Values.deployment.name }}
+      app.kubernetes.io/name: {{ .Values.deployment.name }}
+  replicas: {{ .Values.deployment.replicas }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,33 +20,33 @@ spec:
   template:
     metadata:
       labels:
-        app: notification-service
-        app.kubernetes.io/name: notification-service
+        app: {{ .Values.deployment.name }}
+        app.kubernetes.io/name: {{ .Values.deployment.name }}
       annotations:
         linkerd.io/inject: enabled
     spec:
-      serviceAccountName: notification-service-account
+      serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
-      - name: notification-service
-        image: ecommerce/notification-service:local-dev
-        imagePullPolicy: IfNotPresent
+      - name: {{ .Values.deployment.name }}
+        image: {{ .Values.deployment.image }}:{{ .Values.deployment.tag }}
+        imagePullPolicy: {{ .Values.deployment.imagePullPolicy }}
         ports:
           - containerPort: 8080
         env:
           - name: ASPNETCORE_ENVIRONMENT
             valueFrom:
               configMapKeyRef:
-                name: notification-service-config
+                name: {{ .Values.configMap.name }}
                 key: ASPNETCORE_ENVIRONMENT
           - name: ServiceName
             valueFrom:
               configMapKeyRef:
-                name: notification-service-config
+                name: {{ .Values.configMap.name }}
                 key: ServiceName
           - name: ApiPathBase
             valueFrom:
               configMapKeyRef:
-                name: notification-service-config
+                name: {{ .Values.configMap.name }}
                 key: ApiPathBase
           - name: PodName
             valueFrom:

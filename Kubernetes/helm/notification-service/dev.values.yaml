@@ -1,0 +1,18 @@
+namespace:
+  name: "ecommerce"
+
+deployment:
+  name: "notification-service"
+  replicas: 1
+  image: "ecommerce/notification-service"
+  tag: "local-dev"
+  imagePullPolicy: IfNotPresent
+
+serviceAccount:
+  name: "notification-service-account"
+
+configMap:
+  name: "notification-service-config"
+
+service:
+  name: "notification-service"
