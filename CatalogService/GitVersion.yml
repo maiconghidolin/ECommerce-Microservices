@@ -1,0 +1,11 @@
+mode: ContinuousDeployment
+tag-prefix: 'catalog-service/'
+branches:
+  main:
+    increment: patch
+  feature:
+    increment: minor
+  hotfix:
+    increment: patch
+ignore:
+  sha: []
