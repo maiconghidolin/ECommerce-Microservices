@@ -103,7 +103,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         var catalogServiceConnectionString = OverrideDatabaseProperties(originalConnectionString, $"postgres-{guid}", "CatalogService");
 
         _catalogServiceContainer = new ContainerBuilder()
-            .WithImage("ecommerce/catalog-service:local-dev")
+            .WithImage("maiconghidolin/ecommerce-catalog-service:latest")
             .WithNetwork(_network)
             .WithPortBinding(8080, true)
             .WithName($"catalog-service-{guid}")

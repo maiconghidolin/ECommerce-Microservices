@@ -44,21 +44,23 @@ jobs:
       - name: Build
         run: dotnet build OrderService/OrderService.sln --no-restore --configuration Release
 
-      - name: Run Unit Tests
-        run: dotnet test OrderService/OrderService.Application.Unit.Tests/OrderService.Application.Unit.Tests.csproj --no-build --configuration Release --verbosity normal
-
-      - name: Run Integration Tests
-        run: dotnet test OrderService/OrderService.Presentation.Integration.Tests/OrderService.Presentation.Integration.Tests.csproj --no-build --configuration Release --verbosity normal
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Run Unit Tests
+        run: dotnet test OrderService/OrderService.Application.Unit.Tests/OrderService.Application.Unit.Tests.csproj --no-build --configuration Release --verbosity normal
+
+      - name: Run Integration Tests
+        run: dotnet test OrderService/OrderService.Presentation.Integration.Tests/OrderService.Presentation.Integration.Tests.csproj --no-build --configuration Release --verbosity normal
+
       - name: Build & Push Docker image
         run: |
           IMAGE_NAME=maiconghidolin/ecommerce-order-service
           IMAGE_TAG=${{ steps.gitversion.outputs.semVer }}
           docker build -t $IMAGE_NAME:$IMAGE_TAG -f OrderService/OrderService.Presentation/Dockerfile OrderService
+          docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
           docker push $IMAGE_NAME:$IMAGE_TAG
+          docker push $IMAGE_NAME:latest
