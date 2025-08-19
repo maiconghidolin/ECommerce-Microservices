@@ -11,56 +11,14 @@ on:
       - ".github/workflows/build-catalog-service.yml"
 
 jobs:
-  build:
-    name: Build, Test and Push Docker Image
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.x"
-
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v4.1.0
-        with:
-          versionSpec: '6.3.x'
-
-      - name: Determine Version
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v4.1.0
-        with:
-          useConfigFile: true
-          configFilePath: CatalogService/GitVersion.yml
-
-      - name: Restore dependencies
-        run: dotnet restore CatalogService/CatalogService.sln
-
-      - name: Build
-        run: dotnet build CatalogService/CatalogService.sln --no-restore --configuration Release
-
-      - name: Run Unit Tests
-        run: dotnet test CatalogService/CatalogService.Application.Tests/CatalogService.Application.Unit.Tests.csproj --no-build --configuration Release --verbosity normal
-
-      - name: Run Integration Tests
-        run: dotnet test CatalogService/CatalogService.Presentation.Integration.Tests/CatalogService.Presentation.Integration.Tests.csproj --no-build --configuration Release --verbosity normal
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Build & Push Docker image
-        run: |
-          IMAGE_NAME=maiconghidolin/ecommerce-catalog-service
-          IMAGE_TAG=${{ steps.gitversion.outputs.semVer }}
-          docker build -t $IMAGE_NAME:$IMAGE_TAG -f CatalogService/CatalogService.Presentation/Dockerfile CatalogService
-          docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
-          docker push $IMAGE_NAME:$IMAGE_TAG
-          docker push $IMAGE_NAME:latest
+  jobs:
+  call-template:
+    uses: ./.github/workflows/service-template.yml
+    with:
+      gitversion_config: CatalogService/GitVersion.yml
+      solution_path: CatalogService/CatalogService.sln
+      unit_test_project: CatalogService/CatalogService.Application.Tests/CatalogService.Application.Unit.Tests.csproj
+      integration_test_project: CatalogService/CatalogService.Presentation.Integration.Tests/CatalogService.Presentation.Integration.Tests.csproj
+      docker_image: maiconghidolin/ecommerce-catalog-service
+      dockerfile_path: CatalogService/CatalogService.Presentation/Dockerfile
+      dockerfile_context_path: CatalogService
