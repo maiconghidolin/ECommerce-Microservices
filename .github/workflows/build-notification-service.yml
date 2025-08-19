@@ -1,0 +1,23 @@
+name: CI/CD - Notification Service
+
+on:
+  push:
+    paths:
+      - "NotificationService/**"
+      - ".github/workflows/build-notification-service.yml"
+  pull_request:
+    paths:
+      - "NotificationService/**"
+      - ".github/workflows/build-notification-service.yml"
+
+jobs:
+  call-template:
+    uses: ./.github/workflows/service-template.yml
+    with:
+      gitversion_config: NotificationService/GitVersion.yml
+      solution_path: NotificationService/NotificationService.sln
+      unit_test_project: NotificationService/NotificationService.Application.Unit.Tests/NotificationService.Application.Unit.Tests.csproj
+      integration_test_project: NotificationService/NotificationService.Presentation.Integration.Tests/NotificationService.Presentation.Integration.Tests.csproj
+      docker_image: maiconghidolin/ecommerce-notification-service
+      dockerfile_path: NotificationService/NotificationService.Presentation/Dockerfile
+      dockerfile_context_path: NotificationService
