@@ -11,7 +11,7 @@ public static class DatabaseExtension
 {
     public static void ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+        BsonSerializer.TryRegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
         services.AddSingleton<IMongoClient>(sp =>
         {
