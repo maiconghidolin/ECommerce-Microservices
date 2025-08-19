@@ -24,6 +24,11 @@ on:
       dockerfile_context_path:
         required: true
         type: string
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
 
 jobs:
   build:
