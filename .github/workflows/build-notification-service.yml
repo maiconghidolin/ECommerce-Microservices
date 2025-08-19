@@ -11,7 +11,7 @@ on:
       - ".github/workflows/build-notification-service.yml"
 
 jobs:
-  call-template:
+  build:
     uses: ./.github/workflows/service-template.yml
     with:
       gitversion_config: NotificationService/GitVersion.yml
@@ -21,3 +21,6 @@ jobs:
       docker_image: maiconghidolin/ecommerce-notification-service
       dockerfile_path: NotificationService/NotificationService.Presentation/Dockerfile
       dockerfile_context_path: NotificationService
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
