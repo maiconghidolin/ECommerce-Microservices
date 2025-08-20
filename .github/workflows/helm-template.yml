@@ -28,12 +28,6 @@ jobs:
 
     - name: Package Helm Chart
       run: |
-          cd Kubernetes/helm/${{ inputs.chartName }}
-          helm package . --version 0.1.${{ github.run_number }} --app-version ${{ github.sha }}
-          helm push ${{ inputs.chartName }}-*.tgz oci://ghcr.io/${{ github.repository_owner }}/helm-charts
-
-    - name: Package Helm Chart
-      run: |
         CHART_PATH=Kubernetes/helm/${{ inputs.chartName }}
         helm package $CHART_PATH --destination .helm-charts
 
