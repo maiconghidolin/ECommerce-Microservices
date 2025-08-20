@@ -1,0 +1,17 @@
+name: Helm Chart - OrderService
+
+on:
+  push:
+    paths:
+      - "Kubernetes/helm/OrderService/**"
+      - ".github/workflows/helm-order-service.yml"
+  pull_request:
+    paths:
+      - "Kubernetes/helm/OrderService/**"
+      - ".github/workflows/helm-order-service.yml"
+
+jobs:
+  build:
+    uses: ./.github/workflows/helm-template.yml
+    with:
+      chartName: order-service
