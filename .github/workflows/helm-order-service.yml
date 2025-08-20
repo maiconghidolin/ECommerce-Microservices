@@ -1,4 +1,4 @@
-name: Helm Chart - OrderService
+name: Helm Chart - Order Service
 
 on:
   push:
@@ -18,4 +18,4 @@ jobs:
   build:
     uses: ./.github/workflows/helm-template.yml
     with:
-      chartName: order-service 
+      chartName: order-service
