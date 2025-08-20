@@ -33,9 +33,9 @@ jobs:
           helm push ${{ inputs.chartName }}-*.tgz oci://ghcr.io/${{ github.repository_owner }}/helm-charts
 
     - name: Package Helm Chart
-        run: |
-          CHART_PATH=Kubernetes/helm/${{ inputs.chartName }}
-          helm package $CHART_PATH --destination .helm-charts
+      run: |
+        CHART_PATH=Kubernetes/helm/${{ inputs.chartName }}
+        helm package $CHART_PATH --destination .helm-charts
 
     - name: Push Helm Chart to GHCR
       run: |
