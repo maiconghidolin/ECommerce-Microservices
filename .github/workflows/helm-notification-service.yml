@@ -1,0 +1,21 @@
+name: Helm Chart - Notification Service
+
+on:
+  push:
+    paths:
+      - "Kubernetes/helm/NotificationService/**"
+      - ".github/workflows/helm-notification-service.yml"
+  pull_request:
+    paths:
+      - "Kubernetes/helm/NotificationService/**"
+      - ".github/workflows/helm-notification-service.yml"
+
+permissions:
+  contents: read
+  packages: write
+  
+jobs:
+  build:
+    uses: ./.github/workflows/helm-template.yml
+    with:
+      chartName: notification-service
