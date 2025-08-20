@@ -1,0 +1,21 @@
+name: Helm Chart - Catalog Service
+
+on:
+  push:
+    paths:
+      - "Kubernetes/helm/CatalogService/**"
+      - ".github/workflows/helm-catalog-service.yml"
+  pull_request:
+    paths:
+      - "Kubernetes/helm/CatalogService/**"
+      - ".github/workflows/helm-catalog-service.yml"
+
+permissions:
+  contents: read
+  packages: write
+  
+jobs:
+  build:
+    uses: ./.github/workflows/helm-template.yml
+    with:
+      chartName: catalog-service
