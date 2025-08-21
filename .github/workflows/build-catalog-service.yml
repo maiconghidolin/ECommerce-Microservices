@@ -10,6 +10,11 @@ on:
       - "CatalogService/**"
       - ".github/workflows/build-catalog-service.yml"
 
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+
 jobs:
   build:
     uses: ./.github/workflows/service-template.yml
@@ -24,3 +29,13 @@ jobs:
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  update-values:
+    needs: build
+    uses: ./.github/workflows/update-helm-values-template.yml
+    with:
+      service_name: catalog-service
+      values_path: Kubernetes/helm/catalog-service/prod.values.yaml
+      image_name: maiconghidolin/ecommerce-catalog-service
+      image_tag: ${{ needs.build.outputs.image-tag }}
+      pr_base_branch: main

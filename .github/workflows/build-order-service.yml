@@ -10,6 +10,11 @@ on:
       - "OrderService/**"
       - ".github/workflows/build-order-service.yml"
 
+permissions:
+  contents: write
+  packages: write
+  pull-requests: write
+
 jobs:
   build:
     uses: ./.github/workflows/service-template.yml
@@ -24,3 +29,13 @@ jobs:
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  update-values:
+    needs: build
+    uses: ./.github/workflows/update-helm-values-template.yml
+    with:
+      service_name: order-service
+      values_path: Kubernetes/helm/order-service/prod.values.yaml
+      image_name: maiconghidolin/ecommerce-order-service
+      image_tag: ${{ needs.build.outputs.image-tag }}
+      pr_base_branch: main

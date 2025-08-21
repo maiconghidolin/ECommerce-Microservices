@@ -29,6 +29,10 @@ on:
         required: true
       DOCKER_PASSWORD:
         required: true
+    outputs:
+      image-tag:
+        description: "The docker image tag from GitVersion"
+        value: ${{ jobs.build.outputs.image-tag }}
 
 jobs:
   build:

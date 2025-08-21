@@ -32,12 +32,16 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Install yq
-        run: sudo apt-get update && sudo apt-get install -y yq
+      - name: Print image
+        run: echo "Updating image to ${{ inputs.image_name }}:${{ inputs.image_tag }}"
 
       - name: Update ${{ inputs.values_path }}
-        run: |
-          yq eval ".deployment.image = \"${{ inputs.image_name }}\" | .deployment.tag = \"${{ inputs.image_tag }}\"" -i ${{ inputs.values_path }}
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '.deployment.image = "${{ inputs.image_name }}" | .deployment.tag = "${{ inputs.image_tag }}"' ${{ inputs.values_path }}
+
+      - name: Cat ${{ inputs.values_path }}
+        run: cat ${{ inputs.values_path }}
 
       - name: Create PR
         uses: peter-evans/create-pull-request@v5
