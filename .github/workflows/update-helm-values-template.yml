@@ -1,0 +1,49 @@
+name: Update Helm Values
+
+on:
+  workflow_call:
+    inputs:
+      service_name:
+        required: true
+        type: string
+      values_path:
+        required: true
+        type: string
+      image_name:
+        required: true
+        type: string
+      image_tag:
+        required: true
+        type: string
+      pr_base_branch:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-values:
+    name: Update Helm Values
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install yq
+        run: sudo apt-get update && sudo apt-get install -y yq
+
+      - name: Update ${{ inputs.values_path }}
+        run: |
+          yq eval ".deployment.image = \"${{ inputs.image_name }}\" | .deployment.tag = \"${{ inputs.image_tag }}\"" -i ${{ inputs.values_path }}
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: update-${{ inputs.service_name }}-image
+          commit-message: "Update ${{ inputs.service_name }} Docker image to ${{ inputs.image_tag }}"
+          title: "Update ${{ inputs.service_name }} Docker image"
+          body: "Automated update of ${{ inputs.service_name }} image in ${{ inputs.values_path }}"
+          base: ${{ inputs.pr_base_branch }}

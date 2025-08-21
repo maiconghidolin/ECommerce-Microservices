@@ -35,6 +35,9 @@ jobs:
     name: Build, Test and Push Docker Image
     runs-on: ubuntu-latest
 
+    outputs:
+      image-tag: ${{ steps.gitversion.outputs.semVer }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
