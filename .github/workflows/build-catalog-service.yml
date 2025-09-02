@@ -35,7 +35,7 @@ jobs:
     uses: ./.github/workflows/update-helm-values-template.yml
     with:
       service_name: catalog-service
-      values_path: Kubernetes/helm/catalog-service/prod.values.yaml
+      values_path: Kubernetes/environments/dev/catalog-service/values.yaml
       image_name: maiconghidolin/ecommerce-catalog-service
       image_tag: ${{ needs.build.outputs.image-tag }}
       pr_base_branch: main

@@ -9,6 +9,13 @@ namespace OrderService.Presentation.Controllers;
 public class OrderController(ILogger<OrderController> _logger, IOrderService _orderService) : ControllerBase
 {
 
+    [HttpGet("test")]
+    public IActionResult Test()
+    {
+        _logger.LogInformation("Test endpoint");
+        return Ok();
+    }
+
     [HttpPost("tracing-test")]
     public async Task<ActionResult> TracingTest([FromBody] bool raiseError = false)
     {
