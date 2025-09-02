@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: order-service-dev
+  name: notification-service
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/maiconghidolin/ECommerce-Microservices.git
     targetRevision: main
-    path: Kubernetes/helm/order-service
+    path: Kubernetes/helm/notification-service
     helm:
       valueFiles:
-        - dev.values.yaml
+        - ../../environments/dev/notification-service/values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: ecommerce

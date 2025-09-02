@@ -1,14 +1,18 @@
 namespace:
   name: "ecommerce"
+  
 deployment:
   name: "notification-service"
   replicas: 2
   image: "maiconghidolin/ecommerce-notification-service"
   tag: "0.0.1"
   imagePullPolicy: Always
+
 serviceAccount:
   name: "notification-service-account"
+
 configMap:
   name: "notification-service-config"
+
 service:
   name: "notification-service"
