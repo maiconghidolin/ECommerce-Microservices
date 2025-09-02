@@ -1,18 +1,14 @@
 namespace:
   name: "ecommerce"
-
 deployment:
   name: "order-service"
   replicas: 1
   image: "maiconghidolin/ecommerce-order-service"
   tag: "0.0.1"
   imagePullPolicy: IfNotPresent
-
 serviceAccount:
   name: "order-service-account"
-
 configMap:
   name: "order-service-config"
-
 service:
   name: "order-service"
