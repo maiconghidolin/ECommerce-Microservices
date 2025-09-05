@@ -30,12 +30,13 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-  update-values:
-    needs: build
-    uses: ./.github/workflows/update-helm-values-template.yml
-    with:
-      service_name: order-service
-      values_path: Kubernetes/environments/dev/order-service/values.yaml
-      image_name: maiconghidolin/ecommerce-order-service
-      image_tag: ${{ needs.build.outputs.image-tag }}
-      pr_base_branch: main
+  # This will be replaced by Kargo
+  # update-values:
+  #   needs: build
+  #   uses: ./.github/workflows/update-helm-values-template.yml
+  #   with:
+  #     service_name: order-service
+  #     values_path: Kubernetes/environments/dev/order-service/values.yaml
+  #     image_name: maiconghidolin/ecommerce-order-service
+  #     image_tag: ${{ needs.build.outputs.image-tag }}
+  #     pr_base_branch: main
