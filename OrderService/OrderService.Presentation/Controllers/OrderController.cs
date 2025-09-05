@@ -12,8 +12,7 @@ public class OrderController(ILogger<OrderController> _logger, IOrderService _or
     [HttpGet("test")]
     public IActionResult Test()
     {
-        _logger.LogInformation("Test endpoint");
-        return Ok();
+        return Ok("Test endpoint - v1");
     }
 
     [HttpPost("tracing-test")]
