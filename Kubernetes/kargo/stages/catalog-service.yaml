@@ -1,0 +1,71 @@
+# remember to create the secret to github to push changes
+
+# dev stage
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: catalog-service-dev
+  namespace: ecommerce-kargo
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: catalog-service
+    sources:
+      direct: true
+  
+  promotionTemplate:
+    spec:
+      vars:
+        - name: imageRepo
+          value: docker.io/maiconghidolin/ecommerce-catalog-service
+      steps:
+        - task:
+            name: update-image-task
+          vars:
+            - name: gitOpsRepo
+              value: https://github.com/maiconghidolin/ECommerce-Microservices
+            - name: serviceName
+              value: catalog-service
+            - name: stage
+              value: dev
+            - name: imageTag
+              value: ${{ imageFrom(vars.imageRepo, warehouse("catalog-service")).Tag }}
+            - name: targetBranch
+              value: main
+
+---
+# prod stage (depends on dev)
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: catalog-service-prod
+  namespace: ecommerce-kargo
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: catalog-service
+    sources:
+      stages:
+      - catalog-service-dev
+
+  promotionTemplate:
+    spec:
+      vars:
+        - name: imageRepo
+          value: docker.io/maiconghidolin/ecommerce-catalog-service
+      steps:
+        - task:
+            name: update-image-task
+          vars:
+            - name: gitOpsRepo
+              value: https://github.com/maiconghidolin/ECommerce-Microservices
+            - name: serviceName
+              value: catalog-service
+            - name: stage
+              value: prod
+            - name: imageTag
+              value: ${{ imageFrom(vars.imageRepo, warehouse("catalog-service")).Tag }}
+            - name: targetBranch
+              value: main
