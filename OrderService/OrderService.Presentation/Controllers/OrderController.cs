@@ -12,7 +12,7 @@ public class OrderController(ILogger<OrderController> _logger, IOrderService _or
     [HttpGet("test")]
     public IActionResult Test()
     {
-        return Ok("Test endpoint - v1");
+        return Ok("Test endpoint - v2");
     }
 
     [HttpPost("tracing-test")]
