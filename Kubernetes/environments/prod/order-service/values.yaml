@@ -5,7 +5,7 @@ deployment:
   name: "order-service"
   replicas: 2
   image: "maiconghidolin/ecommerce-order-service"
-  tag: "0.0.1"
+  tag: 1.0.1-7
   imagePullPolicy: Always
 
 serviceAccount:
