@@ -1,0 +1,177 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: keycloak-seed
+  namespace: ecommerce
+spec:
+  template:
+    spec:
+      containers:
+        - name: curl
+          image: alpine:3.20
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+
+              # install curl + jq
+              apk add --no-cache curl jq
+
+              # Get admin token
+              echo "Getting token"
+
+              TOKEN=$(curl -s -k \
+                -d "client_id=admin-cli" \
+                -d "username=$KC_ADMIN" \
+                -d "password=$KC_ADMIN_PASS" \
+                -d "grant_type=password" \
+                "http://keycloak:8080/realms/master/protocol/openid-connect/token" \
+                | jq -r .access_token)
+
+              echo "Got token: ${TOKEN:0:20}..."
+
+              # Create realm if not exists
+              echo "Creating realm"
+
+              curl -s -X POST \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{"realm": "ecommerce", "enabled": true}' \
+                http://keycloak:8080/admin/realms || true
+
+              # Create clients
+              echo "Creating clients"
+
+              curl -s -X POST \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{
+                  "clientId": "ecommerce",
+                  "enabled": true,
+                  "protocol": "openid-connect",
+                  "publicClient": true,
+                  "directAccessGrantsEnabled": true,
+                  "standardFlowEnabled": true,
+                  "redirectUris": []
+                }'\
+                "http://keycloak:8080/admin/realms/ecommerce/clients" || true
+
+              curl -s -X POST \ 
+              -H "Authorization: Bearer $TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{
+                  "clientId": "oauth-proxy",
+                  "enabled": true,
+                  "protocol": "openid-connect",
+                  "publicClient": false,
+                  "directAccessGrantsEnabled": true,
+                  "standardFlowEnabled": true,
+                  "redirectUris": []
+                }'\
+                "http://keycloak:8080/admin/realms/ecommerce/clients" || true
+
+              # Create roles
+              echo "Creating roles"
+
+              curl -s -X POST \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{"name": "admin", "description": "Admin user role"}' \
+                http://keycloak:8080/admin/realms/ecommerce/roles || true
+
+              curl -s -X POST \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{"name": "order-manager", "description": "Order management role"}' \
+                http://keycloak:8080/admin/realms/ecommerce/roles || true
+
+              # Create users
+              echo "Creating admin user"
+
+              curl -s -X POST \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{
+                  "username":"admin", 
+                  "email":"admin@example.com", 
+                  "firstName": "Admin",
+                  "lastName": "User",
+                  "enabled": true,
+                  "emailVerified": true,
+                  "credentials":[
+                    {"type":"password","value":"admin123","temporary":false}
+                  ]
+                }' \
+                http://keycloak:8080/admin/realms/ecommerce/users || true
+
+              USER_ID=$(curl -s \
+                -H "Authorization: Bearer $TOKEN" \
+                "http://keycloak:8080/admin/realms/ecommerce/users?username=admin" \
+                | jq -r '.[0].id')
+
+              echo "Set role to admin user"
+
+              ROLE_ID=$(curl -s \
+                -H "Authorization: Bearer $TOKEN" \
+                "http://keycloak:8080/admin/realms/ecommerce/roles/admin" \
+                | jq -r '.id')
+
+              echo "Role ID: $ROLE_ID"
+
+              curl -s -X POST \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '[{"id": "'"$ROLE_ID"'", "name": "admin"}]' \
+                http://keycloak:8080/admin/realms/ecommerce/users/$USER_ID/role-mappings/realm
+
+              echo "Creating order manager user"
+
+              curl -s -X POST \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '{
+                  "username":"ordermanager", 
+                  "email":"ordermanager@example.com", 
+                  "firstName": "Order",
+                  "lastName": "Manager",
+                  "enabled": true,
+                  "emailVerified": true,
+                  "credentials":[
+                    {"type":"password","value":"order123","temporary":false}
+                  ]
+                }' \
+                http://keycloak:8080/admin/realms/ecommerce/users || true
+
+              USER_ID=$(curl -s \
+                -H "Authorization: Bearer $TOKEN" \
+                "http://keycloak:8080/admin/realms/ecommerce/users?username=ordermanager" \
+                | jq -r '.[0].id')
+
+              echo "Set role to order manager user"
+
+              ROLE_ID=$(curl -s \
+                -H "Authorization: Bearer $TOKEN" \
+                "http://keycloak:8080/admin/realms/ecommerce/roles/order-manager" \
+                | jq -r '.id')
+
+              echo "Role ID: $ROLE_ID"
+
+              curl -s -X POST \
+                -H "Authorization: Bearer $TOKEN" \
+                -H "Content-Type: application/json" \
+                -d '[{"id": "'"$ROLE_ID"'","name": "order-manager"}]' \
+                http://keycloak:8080/admin/realms/ecommerce/users/$USER_ID/role-mappings/realm
+
+          env:
+            - name: KC_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secrets
+                  key: ADMIN_USERNAME
+            - name: KC_ADMIN_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-secrets
+                  key: ADMIN_PASSWORD
+      restartPolicy: Never

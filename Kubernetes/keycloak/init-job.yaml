@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-keycloak-db
+  namespace: ecommerce
+spec:
+  template:
+    spec:
+      containers:
+        - name: psql
+          image: postgres:17
+          command: ["psql"]
+          args:
+            [
+              "-h", "postgres",
+              "-U", "$(PGUSER)",
+              "-c",
+             "CREATE DATABASE keycloak;"]
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_USER
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
+      restartPolicy: Never
