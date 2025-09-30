@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Application.Interfaces;
 using OrderService.Application.Models;
@@ -5,6 +6,7 @@ using OrderService.Application.Models;
 namespace OrderService.Presentation.Controllers;
 
 [ApiController]
+[Authorize(Policy = "AdminOrOrderManager")]
 public class OrderItemController(ILogger<OrderItemController> _logger, IOrderItemService _orderItemService) : ControllerBase
 {
 

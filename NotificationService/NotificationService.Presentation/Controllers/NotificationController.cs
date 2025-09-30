@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NotificationService.Application.Interfaces;
 using NotificationService.Application.Models;
 using NotificationService.Application.Services;
@@ -6,6 +7,7 @@ using NotificationService.Application.Services;
 namespace NotificationService.Presentation.Controllers;
 
 [ApiController]
+[Authorize(Policy = "AdminOrNotificationManager")]
 [Route("notifications")]
 public class NotificationController : ControllerBase
 {

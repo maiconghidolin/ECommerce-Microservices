@@ -1,10 +1,12 @@
 ﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Networks;
 using EasyNetQ;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Driver;
 using Testcontainers.MongoDb;
 using Testcontainers.RabbitMq;
@@ -40,6 +42,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
 
             // Replace with Testcontainers Mongo
             services.AddSingleton<IMongoClient>(testMongoClient);
+
+            services.RemoveAll<IAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, AllowAllAuthorizationHandler>();
         });
     }
 

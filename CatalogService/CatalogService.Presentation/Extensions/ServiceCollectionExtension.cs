@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.Formatters;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using OpenTelemetry.Metrics;
@@ -81,6 +83,20 @@ public static class ServiceCollectionExtension
         });
 
         services.AddHttpClient();
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = false,
+                ValidateIssuerSigningKey = false
+            });
+
+        services.AddAuthorizationBuilder()
+            .AddPolicy("AdminOnly", policy => policy.RequireRole("admin"))
+            .AddPolicy("OrderManagerOnly", policy => policy.RequireRole("order-manager"))
+            .AddPolicy("AdminOrOrderManager", policy => policy.RequireRole("admin", "order-manager"));
     }
 
 }

@@ -1,9 +1,11 @@
 ﻿using CatalogService.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Testcontainers.PostgreSql;
 
 namespace CatalogService.Presentation.Integration.Tests.Factory;
@@ -34,6 +36,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
                     _postgresContainer.GetConnectionString(),
                     x => x.MigrationsAssembly("CatalogService.Infrastructure"));
             });
+
+            services.RemoveAll<IAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, AllowAllAuthorizationHandler>();
         });
     }
 

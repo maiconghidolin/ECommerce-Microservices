@@ -2,12 +2,14 @@
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using EasyNetQ;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrderService.Infrastructure;
 using Testcontainers.PostgreSql;
 using Testcontainers.RabbitMq;
@@ -58,6 +60,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
                     _orderServiceConnectionString,
                     x => x.MigrationsAssembly("OrderService.Infrastructure"));
             });
+
+            services.RemoveAll<IAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, AllowAllAuthorizationHandler>();
         });
     }
 

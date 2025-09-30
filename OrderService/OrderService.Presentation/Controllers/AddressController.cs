@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Application.Interfaces;
@@ -6,6 +7,7 @@ using OrderService.Application.Models;
 namespace OrderService.Presentation.Controllers;
 
 [ApiController]
+[Authorize(Policy = "AdminOrOrderManager")]
 [Route("addresses")]
 public class AddressController(ILogger<AddressController> _logger, IAddressService _addressService) : ControllerBase
 {

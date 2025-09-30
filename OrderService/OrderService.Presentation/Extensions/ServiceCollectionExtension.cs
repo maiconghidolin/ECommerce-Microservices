@@ -1,6 +1,8 @@
 ﻿using EasyNetQ;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using OpenTelemetry.Metrics;
@@ -87,6 +89,8 @@ public static class ServiceCollectionExtension
                 c.AddServer(new OpenApiServer { Url = '/' + basePath });
         });
 
+        services.AddHttpContextAccessor();
+
         services.AddSingleton<IBus>(RabbitHutch.CreateBus(configuration["MessagingSettings:EasyNetQConnectionString"]));
 
         services.AddHealthChecks()
@@ -111,10 +115,33 @@ public static class ServiceCollectionExtension
 
         services.AddHttpClient();
 
-        services.AddHttpClient(configuration["CatalogService:ClientName"], client =>
+        services.AddHttpClient(configuration["CatalogService:ClientName"], (serviceProvider, client) =>
         {
+            var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+
             client.BaseAddress = new Uri(configuration["CatalogService:URI"]);
+
+            var token = httpContextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(token))
+                client.DefaultRequestHeaders.Add("Authorization", token);
+
         });
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = false,
+                ValidateIssuerSigningKey = false
+            });
+
+        services.AddAuthorizationBuilder()
+            .AddPolicy("AdminOnly", policy => policy.RequireRole("admin"))
+            .AddPolicy("OrderManagerOnly", policy => policy.RequireRole("order-manager"))
+            .AddPolicy("AdminOrOrderManager", policy => policy.RequireRole("admin", "order-manager"));
+
     }
 
 }

@@ -1,6 +1,8 @@
 ﻿using EasyNetQ;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -92,6 +94,19 @@ public static class ServiceCollectionExtension
 
         services.AddHttpClient();
 
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = false,
+                ValidateIssuerSigningKey = false
+            });
+
+        services.AddAuthorizationBuilder()
+            .AddPolicy("AdminOnly", policy => policy.RequireRole("admin"))
+            .AddPolicy("NotificationManagerOnly", policy => policy.RequireRole("notification-manager"))
+            .AddPolicy("AdminOrNotificationManager", policy => policy.RequireRole("admin", "notification-manager"));
     }
 
 }
