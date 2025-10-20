@@ -7,8 +7,15 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.ecommerce.svc.cluster.local:4180/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User, X-Auth-Request-Email, X-Auth-Request-Groups"
+
+    cert-manager.io/cluster-issuer: "selfsigned-cluster-issuer"
+    cert-manager.io/common-name: "ecommerce.com"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - ecommerce.com
+      secretName: ecommerce-tls
   rules:
   - host: ecommerce.com
     http:
