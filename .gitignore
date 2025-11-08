@@ -53,3 +53,9 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 */.vs
+Terraform/aws/.terraform
+Terraform/basic/.terraform
+Terraform/aws/.terraform.lock.hcl
+Terraform/basic/.terraform.lock.hcl
+Terraform/basic/terraform.tfstate
+Terraform/basic/terraform.tfstate.backup
