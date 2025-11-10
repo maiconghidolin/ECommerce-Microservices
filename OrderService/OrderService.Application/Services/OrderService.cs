@@ -43,7 +43,7 @@ public class OrderService(IOrderRepository _orderRepository, IPaymentDataReposit
 
         await _orderRepository.Create(mappedOrder);
 
-        await _orderEventPublisher.PublishOrderCreatedEvent(mappedOrder);
+        _ = Task.Run(() => _orderEventPublisher.PublishOrderCreatedEvent(mappedOrder));
     }
 
     public async Task SetShippingAddress(Guid id, Guid addressId)
