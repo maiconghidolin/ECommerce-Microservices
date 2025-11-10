@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: featbit-ingress
+  namespace: ecommerce
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: app.featbit.ecommerce.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: featbit-ui
+            port:
+              number: 8081
+
+  - host: api.featbit.ecommerce.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: featbit-api
+            port:
+              number: 5000
+
+  - host: els.featbit.ecommerce.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: featbit-els
+            port:
+              number: 5100

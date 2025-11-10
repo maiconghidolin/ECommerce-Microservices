@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-featbit-db
+  namespace: ecommerce
+spec:
+  template:
+    spec:
+      containers:
+        - name: psql
+          image: postgres:17
+          command:
+            ["/bin/bash", "-c"]
+          args:
+            [
+              "set -e;
+               echo 'Running initialization scripts...';
+               for f in /sql/*.sql; do
+                 echo \"Applying $f\";
+                 psql -h postgres -U \"$PGUSER\" -f \"$f\";
+               done;
+               echo 'All scripts executed successfully.'"
+            ]
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_USER
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: sql-scripts
+              mountPath: /sql
+      restartPolicy: Never
+      volumes:
+        - name: sql-scripts
+          configMap:
+            name: featbit-sql-scripts

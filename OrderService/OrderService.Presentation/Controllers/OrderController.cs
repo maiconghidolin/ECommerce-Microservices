@@ -1,13 +1,19 @@
+using Asp.Versioning;
+using FeatBit.Sdk.Server;
+using FeatBit.Sdk.Server.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Application.Interfaces;
 using OrderService.Application.Models;
+using OrderService.Presentation.Constants;
 
 namespace OrderService.Presentation.Controllers;
 
+[ApiVersion(1)]
+[ApiVersion(2)]
 [ApiController]
-[Route("orders")]
-public class OrderController(ILogger<OrderController> _logger, IOrderService _orderService) : ControllerBase
+[Route("v{version:apiVersion}/orders")]
+public class OrderController(ILogger<OrderController> _logger, IOrderService _orderService, IOrderItemService _orderItemService, IFbClient _fbClient) : ControllerBase
 {
 
     [Authorize(Policy = "AdminOnly")]
@@ -38,6 +44,7 @@ public class OrderController(ILogger<OrderController> _logger, IOrderService _or
         return await _orderService.GetAll();
     }
 
+    [MapToApiVersion(1)]
     [Authorize(Policy = "AdminOrOrderManager")]
     [HttpGet("{id}")]
     public async Task<ActionResult<Order>> Get(Guid id)
@@ -48,6 +55,31 @@ public class OrderController(ILogger<OrderController> _logger, IOrderService _or
             return NotFound(order);
 
         return order;
+    }
+
+    [MapToApiVersion(2)]
+    [Authorize(Policy = "AdminOrOrderManager")]
+    [HttpGet("{id}")]
+    public async Task<ActionResult> GetV2(Guid id)
+    {
+        var user = FbUser.Builder("tester-id").Name("tester").Build();
+        bool isFeatureAvailable = _fbClient.BoolVariation(FeatureFlags.GetOrderV2, user, defaultValue: false);
+
+        if (!isFeatureAvailable)
+            return NotFound("Feature disabled");
+
+        var order = await _orderService.Get(id);
+
+        if (order == null)
+            return NotFound(id);
+
+        var items = await _orderItemService.GetByOrder(id);
+
+        return Ok(new
+        {
+            order,
+            Items = items
+        });
     }
 
     [Authorize(Policy = "AdminOrOrderManager")]

@@ -1,4 +1,7 @@
-﻿using EasyNetQ;
+﻿using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
+using EasyNetQ;
+using FeatBit.Sdk.Server.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -79,16 +82,6 @@ public static class ServiceCollectionExtension
 
         services.AddEndpointsApiExplorer();
 
-        services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Order API", Version = "v1" });
-
-            var basePath = configuration["ApiPathBase"]?.Trim().TrimStart('/');
-
-            if (!string.IsNullOrWhiteSpace(basePath))
-                c.AddServer(new OpenApiServer { Url = '/' + basePath });
-        });
-
         services.AddHttpContextAccessor();
 
         services.AddSingleton<IBus>(RabbitHutch.CreateBus(configuration["MessagingSettings:EasyNetQConnectionString"]));
@@ -104,6 +97,20 @@ public static class ServiceCollectionExtension
                 name: "Database",
                 failureStatus: HealthStatus.Unhealthy);
 
+        services.AddApiVersioning(options =>
+        {
+            options.DefaultApiVersion = new ApiVersion(1);
+            options.ReportApiVersions = true;
+            options.AssumeDefaultVersionWhenUnspecified = true;
+            options.ApiVersionReader = new UrlSegmentApiVersionReader();
+        })
+        .AddMvc()
+        .AddApiExplorer(options =>
+        {
+            options.GroupNameFormat = "'v'VVV";
+            options.SubstituteApiVersionInUrl = true;
+        });
+
         services.AddMvc(options =>
         {
             var noContentFormatter = options.OutputFormatters.OfType<HttpNoContentOutputFormatter>().FirstOrDefault();
@@ -111,6 +118,26 @@ public static class ServiceCollectionExtension
             {
                 noContentFormatter.TreatNullValueAsNoContent = false;
             }
+        });
+
+        services.AddSwaggerGen(c =>
+        {
+            var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+
+            foreach (var description in provider.ApiVersionDescriptions)
+            {
+                c.SwaggerDoc(description.GroupName, new OpenApiInfo
+                {
+                    Title = "Order Service",
+                    Version = description.ApiVersion.ToString(),
+                    Description = "Order Service"
+                });
+            }
+
+            var basePath = configuration["ApiPathBase"]?.Trim().TrimStart('/');
+
+            if (!string.IsNullOrWhiteSpace(basePath))
+                c.AddServer(new OpenApiServer { Url = '/' + basePath });
         });
 
         services.AddHttpClient();
@@ -141,6 +168,14 @@ public static class ServiceCollectionExtension
             .AddPolicy("AdminOnly", policy => policy.RequireRole("admin"))
             .AddPolicy("OrderManagerOnly", policy => policy.RequireRole("order-manager"))
             .AddPolicy("AdminOrOrderManager", policy => policy.RequireRole("admin", "order-manager"));
+
+        services.AddFeatBit(options =>
+        {
+            options.EnvSecret = configuration["FeatBit:ServerKey"];
+            options.StreamingUri = new Uri(configuration["FeatBit:StreamingUri"]);
+            options.EventUri = new Uri(configuration["FeatBit:EventUri"]);
+            options.StartWaitTime = TimeSpan.FromSeconds(3);
+        });
 
     }
 

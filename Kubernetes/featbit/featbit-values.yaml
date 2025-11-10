@@ -1,0 +1,39 @@
+namespace: ecommerce
+
+apiExternalUrl: "http://api.featbit.ecommerce.com"
+evaluationServerExternalUrl: "http://els.featbit.ecommerce.com"
+
+architecture:
+  tier: "standard"
+  database: "postgres"
+
+ui:
+  enabled: true
+  replicaCount: 1
+
+api:
+  enabled: true
+  replicaCount: 1
+
+els:
+  enabled: true
+  replicaCount: 1
+
+postgresql:
+  enabled: false
+redis:
+  enabled: false
+
+externalRedis:
+  hosts:
+    - "redis:6379"
+  db: 0
+  user: ""
+
+externalPostgresql:
+  hosts:
+    - "postgres:5432"
+  database: "featbit"
+  username: "postgres"
+  existingSecret: "postgres-secrets"
+  existingSecretPasswordKey: "POSTGRES_PASSWORD"
